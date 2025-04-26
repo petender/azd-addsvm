@@ -19,7 +19,7 @@ param _artifactsLocation string = 'https://github.com/petender/azd-addsvm/blob/m
 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
-param _artifactsLocationSasToken string
+param _artifactsLocationSasToken string = ''
 
 // Tags that should be applied to all resources.
 // 

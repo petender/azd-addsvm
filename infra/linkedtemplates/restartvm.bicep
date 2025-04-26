@@ -5,8 +5,7 @@ param computerName string
 param location string
 
 @description('The location of resources, such as templates and DSC modules, that the template depends on')
-param _artifactsLocation string = 'https://attdemodeploystoacc.blob.core.windows.net/deployartifacts/deploytemplateartifacts'
-
+param _artifactsLocation string 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
 param _artifactsLocationSasToken string
@@ -23,7 +22,7 @@ resource computerName_Microsoft_Powershell_DSC 'Microsoft.Compute/virtualMachine
     typeHandlerVersion: '2.19'
     autoUpgradeMinorVersion: true
     settings: {
-      ModulesUrl: ModulesURL
+      ModulesUrl: '${_artifactsLocation}/DSC/RESTARTVM.zip?raw=true'
       ConfigurationFunction: ConfigurationFunction
     }
   }
