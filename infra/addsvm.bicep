@@ -10,6 +10,12 @@ param environmentName string
 param location string
 param tags object = {}
 param resourceToken string
+@description('The location of resources, such as templates and DSC modules, that the template depends on')
+param _artifactsLocation string = 'https://raw.githubusercontent.com/petender/azd-addsvm/master/infra/'
+
+@description('Auto-generated token to access _artifactsLocation')
+@secure()
+param _artifactsLocationSasToken string
 
 @description('The name of the Administrator of the new VM and Domain')
 param adminUsername string
@@ -27,7 +33,7 @@ param WindowsServerLicenseType string = 'None'
 
 @description('VNet1 Name')
 @maxLength(10)
-param NamingConvention string = 'khl'
+param NamingConvention string
 
 @description('Sub DNS Domain Name Example:  sub1. must include a DOT AT END')
 param SubDNSDomain string = ''
@@ -72,12 +78,12 @@ param DC1OSVersion string = '2022-Datacenter'
 @description('Domain Controller1 VMSize')
 param DC1VMSize string = 'Standard_D2s_v3'
 
-@description('The location of resources, such as templates and DSC modules, that the template depends on')
-param _artifactsLocation string = 'https://attdemodeploystoacc.blob.core.windows.net/deployartifacts/deploytemplateartifacts'
+//@description('The location of resources, such as templates and DSC modules, that the template depends on')
+//param _artifactsLocation string = ''
 
-@description('Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value.')
-@secure()
-param _artifactsLocationSasToken string = ''
+//@description('Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value.')
+//@secure()
+//param _artifactsLocationSasToken string = ''
 
 var vnet1Name = '${NamingConvention}-VNet1'
 var vnet1Prefix = '${vnet1ID}.0.0/16'
@@ -88,13 +94,13 @@ var vnet1subnet2Prefix = '${vnet1ID}.2.0/24'
 var vnet1BastionsubnetPrefix = '${vnet1ID}.253.0/24'
 var dc1name = '${NamingConvention}-dc-01'
 var dc1IP = '${vnet1ID}.1.${dc1lastoctet}'
-var ReverseLookup1_var = '1.${ReverseLookup1}'
+//var ReverseLookup1 = '1.${ReverseLookup1}'
 var ForwardLookup1 = '${vnet1ID}.1'
 var dc1lastoctet = '101'
-var DCDataDisk1Name = 'NTDS'
+//var DCDataDisk1Name = 'NTDS'
 var InternaldomainName = '${SubDNSDomain}${InternalDomain}.${InternalTLD}'
 
-module VNet1 '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/vnet.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module VNet1 'linkedtemplates/vnet.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/vnet.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'VNet1'
   params: {
     vnetName: vnet1Name
@@ -122,7 +128,7 @@ module BastionHost1 'linkedtemplates/bastionhost.json' /*TODO: replace with corr
   ]
 }
 
-module deployDC1VM '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/1nic-2disk-vm.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module deployDC1VM 'linkedtemplates/1nic-1disk-vm.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/1nic-2disk-vm.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'deployDC1VM'
   params: {
     computerName: dc1name
@@ -130,8 +136,8 @@ module deployDC1VM '?' /*TODO: replace with correct path to [uri(parameters('_ar
     Publisher: 'MicrosoftWindowsServer'
     Offer: 'WindowsServer'
     OSVersion: DC1OSVersion
-    LicenseType: WindowsServerLicenseType
-    DataDisk1Name: DCDataDisk1Name
+    licenseType: WindowsServerLicenseType
+    //DataDisk1Name: DCDataDisk1Name
     VMSize: DC1VMSize
     vnetName: vnet1Name
     subnetName: vnet1subnet1Name
@@ -145,13 +151,13 @@ module deployDC1VM '?' /*TODO: replace with correct path to [uri(parameters('_ar
   ]
 }
 
-module promotedc1 '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/firstdc.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module promotedc1 'linkedtemplates/firstdc.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/firstdc.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'promotedc1'
   params: {
     computerName: dc1name
     TimeZone: TimeZone
     NetBiosDomain: NetBiosDomain
-    DomainName: InternaldomainName
+    domainName: InternaldomainName
     adminUsername: adminUsername
     adminPassword: adminPassword
     _artifactsLocation: _artifactsLocation
@@ -163,7 +169,7 @@ module promotedc1 '?' /*TODO: replace with correct path to [uri(parameters('_art
   ]
 }
 
-module updatevnet1dns '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/updatevnetdns.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module updatevnet1dns 'linkedtemplates/updatevnetdns.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/updatevnetdns.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'updatevnet1dns'
   params: {
     vnetName: vnet1Name
@@ -183,7 +189,7 @@ module updatevnet1dns '?' /*TODO: replace with correct path to [uri(parameters('
   ]
 }
 
-module restartdc1 '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/restartvm.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module restartdc1 'linkedtemplates/restartvm.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/restartvm.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'restartdc1'
   params: {
     computerName: dc1name
@@ -196,13 +202,13 @@ module restartdc1 '?' /*TODO: replace with correct path to [uri(parameters('_art
   ]
 }
 
-module configdns '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/configdnsint.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module configdns 'linkedtemplates/configdnsint.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/configdnsint.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'configdns'
   params: {
     computerName: dc1name
     NetBiosDomain: NetBiosDomain
-    InternalDomainName: InternaldomainName
-    ReverseLookup1: ReverseLookup1_var
+    InternaldomainName: InternaldomainName
+    ReverseLookup1: ReverseLookup1
     ForwardLookup1: ForwardLookup1
     dc1lastoctet: dc1lastoctet
     adminUsername: adminUsername

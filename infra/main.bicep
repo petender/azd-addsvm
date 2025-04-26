@@ -9,8 +9,18 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+@description('VNet1 Name')
+@maxLength(10)
+param NamingConvention string = take(environmentName, 10)
+
 var abbrs = loadJsonContent('./abbreviations.json')
 
+@description('The location of resources, such as templates and DSC modules, that the template depends on')
+param _artifactsLocation string = 'https://raw.githubusercontent.com/petender/azd-addsvm/master/infra/'
+
+@description('Auto-generated token to access _artifactsLocation')
+@secure()
+param _artifactsLocationSasToken string
 
 // Tags that should be applied to all resources.
 // 
@@ -38,13 +48,15 @@ module addsvm 'addsvm.bicep' = {
     adminUsername: 'adminuser'
     adminPassword: 'P@ssw0rd!'
     WindowsServerLicenseType: 'None'
-    NamingConvention: abbrs[environmentName]
+    NamingConvention: NamingConvention
     SubDNSDomain: 'sub1.'
     NetBiosDomain: 'mttdemodomain'
     InternalDomain: 'mttdemodomain'
     InternalTLD: 'com'
     vnet1ID: '10.1'
     ReverseLookup1: '1.10'
+    _artifactsLocation: _artifactsLocation
+    _artifactsLocationSasToken: _artifactsLocationSasToken
 
 
     environmentName: environmentName
