@@ -10,8 +10,7 @@ param environmentName string
 param location string
 param tags object = {}
 param resourceToken string
-@description('The location of resources, such as templates and DSC modules, that the template depends on')
-param _artifactsLocation string = 'https://raw.githubusercontent.com/petender/azd-addsvm/master/infra/'
+param _artifactsLocation string = 'https://github.com/petender/azd-addsvm/blob/main/infra/'
 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()

@@ -26,7 +26,7 @@ resource computerName_Microsoft_Powershell_DSC 'Microsoft.Compute/virtualMachine
     typeHandlerVersion: '2.19'
     autoUpgradeMinorVersion: true
     settings: {
-      ModulesUrl: ModulesURL
+      ModulesUrl: 'https://github.com/petender/azd-addsvm/blob/main/infra/DSC/CREATEOUS.zip?raw=true'
       ConfigurationFunction: ConfigurationFunction
       Properties: {
         BaseDN: BaseDN
