@@ -9,11 +9,12 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+param adminusername string
+param adminpassword string
+
 @description('VNet1 Name')
 @maxLength(10)
 param NamingConvention string = take(environmentName, 10)
-
-var abbrs = loadJsonContent('./abbreviations.json')
 
 param _artifactsLocation string = 'https://github.com/petender/azd-addsvm/blob/main/infra/'
 
@@ -29,7 +30,6 @@ param _artifactsLocationSasToken string = ''
 var tags = {
   'azd-env-name': environmentName
 }
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 
 // This deploys the Resource Group
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -38,14 +38,14 @@ resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
-// add a module for a virtual machine
+// add a module for a virtual machine which will be used as a domain controller
 module addsvm 'addsvm.bicep' = {
   name: 'vm-${take(environmentName, 15)}'
   scope: rg
   params: {
     TimeZone: 'Pacific Standard Time'
-    adminUsername: 'adminuser'
-    adminPassword: 'P@ssw0rd!'
+    adminUsername: adminusername //'adminuser'
+    adminPassword: adminpassword //'P@ssw0rd!'
     WindowsServerLicenseType: 'None'
     NamingConvention: NamingConvention
     SubDNSDomain: 'sub1.'
@@ -56,12 +56,6 @@ module addsvm 'addsvm.bicep' = {
     ReverseLookup1: '1.10'
     _artifactsLocation: _artifactsLocation
     _artifactsLocationSasToken: _artifactsLocationSasToken
-
-
-    environmentName: environmentName
-    location: location
-    tags: tags
-    resourceToken: resourceToken
     
   }
 }

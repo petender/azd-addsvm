@@ -1,6 +1,15 @@
-# AZD Trainer-Demo-Deploy Starter template
+## Azure VM As ADDS Domain Controller with Bastion
 
-This template could be used as a starting point for creating your own AZD-compatible templates, which you will contribute to [Trainer-Demo-Deploy](https://aka.ms/trainer-demo-deploy). 
+This repo contains a demo for an Azure VM, running Windows 22 as ADDS - Active Directory Domain Controller with local DNS. The VM is remotely reachable through Azure Bastion, which is integrated into the deployment.
+A dummy internal DNS domain gets created sub1.mttdemodomain.com
+
+You will get prompted during the AZD deployment step for the adminusername and adminpassword parameters. Make sure it follows the [Azure VM username requirements](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-) as well as [Azure VM password requirements](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm-)
+
+In a later stage, we might run an additional script to create sample users and OUs. 
+
+This scenario can be deployed to Azure using the [Azure Developer CLI - AZD](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview). 
+
+💪 This template scenario is part of the larger **[Microsoft Trainer Demo Deploy Catalog](https://aka.ms/trainer-demo-deploy)**.
 
 ## ⬇️ Installation
 - [Azure Developer CLI - AZD](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
@@ -9,36 +18,29 @@ This template could be used as a starting point for creating your own AZD-compat
         - [Bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
     - You need Owner or Contributor access permissions to an Azure Subscription to  deploy the scenario.
 
-## 🚀 Cloning the scenario in 4 steps:
+## 🚀 Deploying the scenario in 3 easy steps:
 
-1. Create a new folder on your machine.
+1. From within a new folder on your machine, run `azd init` to initialize the deployment.
 ```
-mkdir tdd-azd-starter
+azd init -t petender/azd-addsvm
 ```
-2. Next, navigate to the new folder.
+2. Next, run `azd up` to trigger an actual deployment.
 ```
-cd tdd-azd-starter
+azd up
 ```
-3. Next, run `azd init` to initialize the deployment.
+3. If you want to delete the scenario from your Azure subscription, use `azd down`
 ```
-azd init -t petender/tdd-azd-starter
-```
-4. Copy the starter template into its own directory and modify the template.
-```
-Update the main.bicep and resources.bicep with your own resource information
-```
-5. Update the azure.yaml metadata
-```
-Update the name and metadata.template parameters in the azure.yaml, with your preferred scenario name, e.g. tdd-azd-trafficmgr
+azd down --purge --force
 ```
 
-## 🚀 Push the scenario to your own GitHub:
+⏩ Note: running `azd down` deletes the RG and Resources, but will keep the artifacts on your local machine.
 
-1. Sync the new scenario you created into your own GitHub account into a public repo, using the same name as what you specified in the azure.yaml
+## What is the demo scenario about?
 
-2. Once available, add the necessary "additional demo scenario artifacts" (demoguide.md, demoguide screenshots, scenario architecture diagram,...) 
+- Use the [demo guide]([insert raw link to the demoguide within your repo](https://github.com/petender/azd-storaccnt/blob/main/Demoguides/addsvm.md)) for inspiration for your demo
 
-3. With all template details and demo artifacts available in the repo, follow the steps on how to [Contribute](https://microsoftlearning.github.io/trainer-demo-deploy/docs/contribute) to Trainer-Demo-Deploy, to get your scenario published into the catalog.
-
-
+## 💭 Feedback and Contributing
+Feel free to create issues for bugs, suggestions or Fork and create a PR with new demo scenarios or optimizations to the templates. 
+If you like the scenario, consider giving a GitHub ⭐
  
+

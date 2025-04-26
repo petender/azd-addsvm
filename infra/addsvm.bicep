@@ -6,10 +6,6 @@
 ])
 param TimeZone string = 'Pacific Standard Time'
 
-param environmentName string
-param location string
-param tags object = {}
-param resourceToken string
 param _artifactsLocation string 
 
 @description('Auto-generated token to access _artifactsLocation')
@@ -69,8 +65,7 @@ param ReverseLookup1 string = '1.10'
 @allowed([
   '2022-Datacenter'
   '2019-Datacenter'
-  '2016-Datacenter'
-  '2012-R2-Datacenter'
+
 ])
 param DC1OSVersion string = '2022-Datacenter'
 
@@ -113,7 +108,7 @@ module VNet1 'linkedtemplates/vnet.bicep' /*TODO: replace with correct path to [
   }
 }
 
-module BastionHost1 'linkedtemplates/bastionhost.json' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/bastionhost.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module BastionHost1 'linkedtemplates/bastionhost.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/bastionhost.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'BastionHost1'
   params: {
     publicIPAddressName: '${vnet1Name}-Bastion-pip'
