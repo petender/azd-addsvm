@@ -10,7 +10,7 @@ param environmentName string
 param location string
 param tags object = {}
 param resourceToken string
-param _artifactsLocation string = 'https://github.com/petender/azd-addsvm/blob/main/infra/'
+param _artifactsLocation string 
 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
@@ -96,7 +96,7 @@ var dc1IP = '${vnet1ID}.1.${dc1lastoctet}'
 //var ReverseLookup1 = '1.${ReverseLookup1}'
 var ForwardLookup1 = '${vnet1ID}.1'
 var dc1lastoctet = '101'
-//var DCDataDisk1Name = 'NTDS'
+var DCDataDisk1Name = 'NTDS'
 var InternaldomainName = '${SubDNSDomain}${InternalDomain}.${InternalTLD}'
 
 module VNet1 'linkedtemplates/vnet.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/vnet.json', parameters('_artifactsLocationSasToken')))]*/ = {
@@ -127,7 +127,7 @@ module BastionHost1 'linkedtemplates/bastionhost.json' /*TODO: replace with corr
   ]
 }
 
-module deployDC1VM 'linkedtemplates/1nic-1disk-vm.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/1nic-2disk-vm.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module deployDC1VM 'linkedtemplates/1nic-2disk-vm.bicep' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('ADDS_VM/.azure/linkedtemplates/1nic-2disk-vm.json', parameters('_artifactsLocationSasToken')))]*/ = {
   name: 'deployDC1VM'
   params: {
     computerName: dc1name
@@ -136,7 +136,7 @@ module deployDC1VM 'linkedtemplates/1nic-1disk-vm.bicep' /*TODO: replace with co
     Offer: 'WindowsServer'
     OSVersion: DC1OSVersion
     licenseType: WindowsServerLicenseType
-    //DataDisk1Name: DCDataDisk1Name
+    DataDisk1Name: DCDataDisk1Name
     VMSize: DC1VMSize
     vnetName: vnet1Name
     subnetName: vnet1subnet1Name

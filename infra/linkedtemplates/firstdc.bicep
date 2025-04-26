@@ -21,7 +21,7 @@ param adminUsername string
 param adminPassword string
 
 @description('The location of resources, such as templates and DSC modules, that the template depends on')
-param _artifactsLocation string = 'https://github.com/petender/azd-addsvm/blob/main/infra/'
+param _artifactsLocation string 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
 param _artifactsLocationSasToken string
@@ -38,7 +38,7 @@ resource computerName_Microsoft_Powershell_DSC 'Microsoft.Compute/virtualMachine
     typeHandlerVersion: '2.19'
     autoUpgradeMinorVersion: true
     settings: {
-      ModulesUrl: 'https://github.com/petender/azd-addsvm/blob/main/infra/DSC/FIRSTDC.zip?raw=true'
+      ModulesUrl: '${_artifactsLocation}/DSC/FIRSTDC.zip?raw=true'
       ConfigurationFunction: ConfigurationFunction
       Properties: {
         DomainName: domainName
