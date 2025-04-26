@@ -2,8 +2,8 @@
 
 # update the name and metadata.template to match your project
 
-name: azd-tdd-starter
+name: tdd-azd-addsvm
 metadata:
-  template: azd-tdd-starterr@0.0.1-beta
+  template: tdd-azd-addsvm@0.0.1
 infra:
    provider: "bicep"

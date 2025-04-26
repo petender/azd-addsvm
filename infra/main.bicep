@@ -11,6 +11,7 @@ param location string
 
 var abbrs = loadJsonContent('./abbreviations.json')
 
+
 // Tags that should be applied to all resources.
 // 
 // Note that 'azd-service-name' tags should be applied separately to service host resources.
@@ -28,17 +29,31 @@ resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
-// Add resources to be provisioned below. This can be actual resources, or if you follow the modular approach, create a module and point to the module.bicep file, like this example:
-//module trafficmgr './trafficmgr.bicep' = {
-//  name: 'resources'
-//  scope: rg
-//  params: {
-//    uniqueDnsName: 'tmlab-${resourceToken}'
-//    location: location
-//    tags: tags
-//    environmentName: environmentName
-//  }
-//}
+// add a module for a virtual machine
+module addsvm 'addsvm.bicep' = {
+  name: 'vm-${take(environmentName, 15)}'
+  scope: rg
+  params: {
+    TimeZone: 'Pacific Standard Time'
+    adminUsername: 'adminuser'
+    adminPassword: 'P@ssw0rd!'
+    WindowsServerLicenseType: 'None'
+    NamingConvention: abbrs[environmentName]
+    SubDNSDomain: 'sub1.'
+    NetBiosDomain: 'mttdemodomain'
+    InternalDomain: 'mttdemodomain'
+    InternalTLD: 'com'
+    vnet1ID: '10.1'
+    ReverseLookup1: '1.10'
+
+
+    environmentName: environmentName
+    location: location
+    tags: tags
+    resourceToken: resourceToken
+    
+  }
+}
 
 // Add outputs from the deployment here, if needed.
 //
