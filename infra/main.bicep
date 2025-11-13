@@ -29,6 +29,7 @@ param _artifactsLocationSasToken string = ''
 //   tags: union(tags, { 'azd-service-name': <service name in azure.yaml> })
 var tags = {
   'azd-env-name': environmentName
+  'SecurityControl': 'Ignore'
 }
 
 // This deploys the Resource Group
